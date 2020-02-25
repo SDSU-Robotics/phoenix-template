@@ -25,12 +25,29 @@
  1. `cd ~/catkin_ws`
  2. `catkin_make`
 
- ## Running
+ ## Enable Hot Swapping
  1. Connect USB CAN interface (if not already connected)
- 2. Initialize CAN interface
-	 - `~/catkin_ws/src/phoenix-template/scripts/canableStart.sh`
-	 - If there is an error, try running it again.
-	 - If it still doesn't work, check the device name with `ls /dev` and ensure that the device name in the `canableStart.sh` script matches.
- 3. Connect game controller (if not already connected)
- 4. Call launch file
+ 2. Set up permissions
+     - `git clone https://github.com/CrossTheRoadElec/Phoenix-Linux-SocketCAN-Example.git`
+     - `cd ./Phoenix-Linux-SocketCAN-Example/.`
+     - `chmod +x build.sh`
+     - `chmod +x clean.sh`
+     - `chmod +x canableStart.sh`
+
+ 3. Edit interfaces
+     - `cd /etc/network/.`
+     - `sudo gedit interfaces` (if that doesnt work, try `sudo nano interfaces`)
+     - Add these lines below the text already in the file and save (Each point is one line)
+
+       - `allow-hotplug can0`
+       - `iface can0 can static`
+       - `bitrate 1000000`
+       - `txqueuelen 1000`
+       - `up /sbin/ip link set $IFACE down`
+       - `up /sbin/ip link set $IFACE up type can`
+     - Disconect and reconnect the CAN interface.  The light will turn green if it is connected properly
+
+ 4. Connect game controller (if not already connected)
+ 5. Call launch file
 	- `roslaunch phoenix-template MotorTest.launch`
+    - Motor controller lights will turn to flashing orange
