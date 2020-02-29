@@ -25,7 +25,7 @@ private:
 
 int main (int argc, char **argv)
 {
-	ros::init(argc, argv, "SimpleMotor");
+	ros::init(argc, argv, "Talon Percent Output");
 	ros::NodeHandle n;
 	
 	ctre::phoenix::platform::can::SetCANInterface("can0");
