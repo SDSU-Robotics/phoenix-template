@@ -22,7 +22,7 @@ include_directories (src include ${catkin_INCLUDE_DIRS})
 
 add_executable(SimpleJoystick ${PROJECT_SOURCE_DIR}/src/SimpleJoystick.cpp)
 add_executable(TalonPercentOutput ${PROJECT_SOURCE_DIR}/src/TalonPercentOutput.cpp)
-add_executable(CanifierServoTest ${PROJECT_SOURCE_DIR}/src/TalonPercentOutput.cpp)
+add_executable(CanifierServoTest ${PROJECT_SOURCE_DIR}/src/CanifierServoTest.cpp)
 
 target_link_libraries(SimpleJoystick ${catkin_LIBRARIES})
 target_link_libraries(TalonPercentOutput ${catkin_LIBRARIES} Threads::Threads)
