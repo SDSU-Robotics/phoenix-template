@@ -20,10 +20,9 @@
      - `source ~/.bashrc`
  2. Clone repo into user directory `git clone https://github.com/SDSU-Robotics/phoenix-template.git`.
  3. Navigate into repo `cd phoenix-template`.
-
-## Building
- 1. `cd ~/catkin_ws`
- 2. `catkin_make`
+ 4. `cd ~/catkin_ws`
+ 5. `catkin_make`
+  - Only needs to be done once for setup.  Call whenever you edit source code.
 
  ## Enable Hot Swapping
  1. Connect USB CAN interface (if not already connected)
@@ -47,7 +46,8 @@
        - `up /sbin/ip link set $IFACE up type can`
      - Disconect and reconnect the CAN interface.  The light will turn green if it is connected properly
 
- 4. Connect game controller (if not already connected)
- 5. Call launch file
+## Running
+ 1. Connect game controller (if not already connected)
+ 2. Call launch file
 	- `roslaunch phoenix-template MotorTest.launch`
     - Motor controller lights will turn to flashing orange
