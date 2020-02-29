@@ -25,18 +25,10 @@
   - Only needs to be done once for setup.  Call whenever you edit source code.
 
  ## Enable Hot Swapping
- 1. Connect USB CAN interface (if not already connected)
- 2. Set up permissions
-     - `git clone https://github.com/CrossTheRoadElec/Phoenix-Linux-SocketCAN-Example.git`
-     - `cd ./Phoenix-Linux-SocketCAN-Example/.`
-     - `chmod +x build.sh`
-     - `chmod +x clean.sh`
-     - `chmod +x canableStart.sh`
-
- 3. Edit interfaces
-     - `cd /etc/network/.`
-     - `sudo gedit interfaces` (if that doesnt work, try `sudo nano interfaces`)
-     - Add these lines below the text already in the file and save (Each point is one line)
+Configure Interface
+- `cd /etc/network/.`
+- `sudo gedit interfaces` (if that doesnt work, try `sudo nano interfaces`)
+- Add these lines below the text already in the file and save (Each point is one line)
 
        - `allow-hotplug can0`
        - `iface can0 can static`
@@ -44,10 +36,10 @@
        - `txqueuelen 1000`
        - `up /sbin/ip link set $IFACE down`
        - `up /sbin/ip link set $IFACE up type can`
-     - Disconect and reconnect the CAN interface.  The light will turn green if it is connected properly
+Connect the CAN interface.  The light will turn green if it is connected properly
 
 ## Running
  1. Connect game controller (if not already connected)
  2. Call launch file
-	- `roslaunch phoenix-template MotorTest.launch`
+	- `roslaunch phoenix-template TalonTest.launch`
     - Motor controller lights will turn to flashing orange
