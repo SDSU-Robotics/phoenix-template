@@ -26,7 +26,7 @@ private:
 
 int main (int argc, char **argv)
 {
-	ros::init(argc, argv, "Victor Percent Output");
+	ros::init(argc, argv, "VictorPercentOutput");
 	ros::NodeHandle n;
 	
 	ctre::phoenix::platform::can::SetCANInterface("can0");
