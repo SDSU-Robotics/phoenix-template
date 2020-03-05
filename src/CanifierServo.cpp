@@ -12,27 +12,30 @@ using namespace ctre::phoenix;
 using namespace ctre::phoenix::platform;
 using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;
+// Sterling Berg
+
+
 
 class Listener
 {
 public:
-	void setSpeed(const std_msgs::Float32 msg);
+	void setPosition(const std_msgs::Float32 msg);
 
 private:
-	TalonSRX _motor = {DeviceIDs::motor};
+	CANifier _canifer = {DeviceIDs::canifier};
 };
 
 
 int main (int argc, char **argv)
 {
-	ros::init(argc, argv, "Talon Percent Output");
+	ros::init(argc, argv, "CanifierServo");
 	ros::NodeHandle n;
 	
 	ctre::phoenix::platform::can::SetCANInterface("can0");
 
 	Listener listener;
 
-	ros::Subscriber speed_sub = n.subscribe("speed", 1000, &Listener::setSpeed, &listener);
+	ros::Subscriber speed_sub = n.subscribe("speed", 1000, &Listener::setPosition, &listener);
 
 	ros::spin();
 
@@ -40,16 +43,16 @@ int main (int argc, char **argv)
 }
 
 
-void Listener::setSpeed(const std_msgs::Float32 msg)
+void Listener::setPosition(const std_msgs::Float32 msg)
 {
 	// limit values
-	float percentOutput = msg.data;
-	if (percentOutput < -1.0f)
-		percentOutput = -1.0f;
-	else if (percentOutput > 1.0f)
-		percentOutput = 1.0f;
+	float pos = msg.data;
+	if (pos < 0.0f)
+		pos = 0.0f;
+	else if (pos > 1.0f)
+		pos = 1.0f;
 
-	_motor.Set(ControlMode::PercentOutput, percentOutput);
+	_canifer.SetGeneralOutput(CANifier::GeneralPin::SDA, pos > 0.5 ? true : false, true);
 
 	ctre::phoenix::unmanaged::FeedEnable(100); // feed watchdog
 }
