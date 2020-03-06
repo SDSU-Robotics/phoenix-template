@@ -23,10 +23,12 @@ include_directories (src include ${catkin_INCLUDE_DIRS})
 add_executable(SimpleJoystick ${PROJECT_SOURCE_DIR}/src/SimpleJoystick.cpp)
 add_executable(TalonPercentOutput ${PROJECT_SOURCE_DIR}/src/TalonPercentOutput.cpp)
 add_executable(VictorPercentOutput ${PROJECT_SOURCE_DIR}/src/VictorPercentOutput.cpp)
+add_executable(TalonQuadPosition ${PROJECT_SOURCE_DIR}/src/TalonQuadPosition.cpp)
 
 target_link_libraries(SimpleJoystick ${catkin_LIBRARIES})
 target_link_libraries(TalonPercentOutput ${catkin_LIBRARIES} Threads::Threads)
 target_link_libraries(VictorPercentOutput ${catkin_LIBRARIES} Threads::Threads)
+target_link_libraries(TalonQuadPosition ${catkin_LIBRARIES} Threads::Threads)
 
 # Phoenix includes
 if (${CMAKE_LIBRARY_ARCHITECTURE} STREQUAL "arm-linux-gnueabihf") # Jetson TK1 / Pi
@@ -35,6 +37,11 @@ if (${CMAKE_LIBRARY_ARCHITECTURE} STREQUAL "arm-linux-gnueabihf") # Jetson TK1 /
     target_link_libraries(TalonPercentOutput /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/raspberry/libCTRE_PhoenixCCI.a)
     target_link_libraries(TalonPercentOutput /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/raspberry/libCTRE_PhoenixPlatformLinuxSocketCan.a)
     target_link_libraries(TalonPercentOutput /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/raspberry/libCTRE_PhoenixCanutils.a)
+
+    target_link_libraries(TalonQuadPosition /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/raspberry/libCTRE_Phoenix.a)
+    target_link_libraries(TalonQuadPosition /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/raspberry/libCTRE_PhoenixCCI.a)
+    target_link_libraries(TalonQuadPosition /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/raspberry/libCTRE_PhoenixPlatformLinuxSocketCan.a)
+    target_link_libraries(TalonQuadPosition /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/raspberry/libCTRE_PhoenixCanutils.a)
 
     target_link_libraries(VictorPercentOutput /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/raspberry/libCTRE_Phoenix.a)
     target_link_libraries(VictorPercentOutput /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/raspberry/libCTRE_PhoenixCCI.a)
@@ -52,5 +59,12 @@ else()
     target_link_libraries(VictorPercentOutput /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/x86-64/libCTRE_PhoenixCCI.a)
     target_link_libraries(VictorPercentOutput /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/x86-64/libCTRE_PhoenixPlatformLinuxSocketCan.a)
     target_link_libraries(VictorPercentOutput /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/x86-64/libCTRE_PhoenixCanutils.a)
+
+    target_link_libraries(TalonQuadPosition /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/x86-64/libCTRE_Phoenix.a)
+    target_link_libraries(TalonQuadPosition /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/x86-64/libCTRE_PhoenixCCI.a)
+    target_link_libraries(TalonQuadPosition /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/x86-64/libCTRE_PhoenixPlatformLinuxSocketCan.a)
+    target_link_libraries(TalonQuadPosition /home/$ENV{USERNAME}/catkin_ws/src/phoenix-template/lib/x86-64/libCTRE_PhoenixCanutils.a)
+
+
 
 endif()
