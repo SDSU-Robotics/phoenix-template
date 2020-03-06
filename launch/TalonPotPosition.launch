@@ -1,0 +1,8 @@
+
+<launch>
+
+    <node respawn="true" pkg="phoenix_template" type="TalonPotPosition" name="TalonPotPosition"> 
+    <node respawn="true" pkg="phoenix-template" type="SimpleJoystick" name="SimpleJoystick" />
+
+
+</launch>
