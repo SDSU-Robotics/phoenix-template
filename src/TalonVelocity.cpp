@@ -58,6 +58,8 @@ int main (int argc, char **argv)
 
 	std_msgs::Float32 actualSpeed_msg;
 
+	ros::Duration(1.0).sleep();
+
 	while (ros::ok())
 	{
 		actualSpeed_msg.data = listener.getActualSpeed();
@@ -81,7 +83,8 @@ void Listener::setSpeed(const std_msgs::Float32 msg)
 	else if (mps > MAX_SPEED)
 		mps = MAX_SPEED;
 
-	_motor.Set(ControlMode::Velocity, mps2countsPer100ms(mps));
+	//_motor.Set(ControlMode::Velocity, mps2countsPer100ms(mps));
+	_motor.Set(ControlMode::PercentOutput, mps / 3.0);
 
 	ctre::phoenix::unmanaged::FeedEnable(100); // feed watchdog
 }
@@ -116,11 +119,11 @@ Listener::Listener()
 	motorProfile.slot0.closedLoopPeakOutput     = 1.0f; //Peak output for the PID Controller.
 	motorProfile.slot0.closedLoopPeriod         = 100;   //Samples per second (?) (IDK what this is)
 
-	_motor.ConfigAllSettings(motorProfile);
+	//_motor.ConfigAllSettings(motorProfile);
 
-	_motor.SetNeutralMode(NeutralMode::Brake);
-	_motor.SetInverted(false);
-	_motor.SetSensorPhase(false);
+	//_motor.SetNeutralMode(NeutralMode::Brake);
+	//_motor.SetInverted(false);
+	//_motor.SetSensorPhase(false);
 }
 
 
