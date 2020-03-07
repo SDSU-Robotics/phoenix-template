@@ -36,6 +36,7 @@ int main (int argc, char **argv)
 	Listener listener;
 
 	ros::Subscriber speed_sub = n.subscribe("speed", 1000, &Listener::setPosition, &listener);
+	
 
 	ros::spin();
 
@@ -47,12 +48,28 @@ void Listener::setPosition(const std_msgs::Float32 msg)
 {
 	// limit values
 	float pos = msg.data;
-	if (pos < 0.0f)
-		pos = 0.0f;
+	float pulse = 0;
+	if (pos < -1.0f)
+		pos = -1.0f;
 	else if (pos > 1.0f)
 		pos = 1.0f;
+	int flag = 0;
 
-	_canifer.SetGeneralOutput(CANifier::GeneralPin::SDA, pos > 0.5 ? true : false, true);
+	if (flag == 0){
+		_canifer.SetGeneralOutput(CANifier::GeneralPin::SPI_CLK_PWM0P, false, true);
+		flag = 1;
+	}
+
+	_canifer.SetGeneralOutput(CANifier::GeneralPin::QUAD_A, pos > 0.5 ? true : false, true);
+	
+	pulse = LinearInterpolation::Calculate(pos, -1, 1000, 1, 2000);
+	pulse = pulse/4200;
+
+	_canifer.SetPWMOutput(0, pulse);
+	
+
+	
+	_canifer.EnablePWMOutput(0, true);
 
 	ctre::phoenix::unmanaged::FeedEnable(100); // feed watchdog
 }
