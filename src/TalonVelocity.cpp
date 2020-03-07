@@ -14,7 +14,7 @@ using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;
 
 #define PI 3.1415927
-#define DIAMETER 0.2
+#define DIAMETER 0.2		// should be updated to non-tread diameter of wheels
 #define GEAR_RATIO 26.9
 #define COUNTS_PER_REVOLUTION 7
 
@@ -58,7 +58,7 @@ int main (int argc, char **argv)
 
 	std_msgs::Float32 actualSpeed_msg;
 
-	ros::Duration(1.0).sleep();
+	ros::Duration(1.0).sleep();    // give time to finish initialization before trying to read position data, otherwise it will fail
 
 	while (ros::ok())
 	{
@@ -83,8 +83,7 @@ void Listener::setSpeed(const std_msgs::Float32 msg)
 	else if (mps > MAX_SPEED)
 		mps = MAX_SPEED;
 
-	//_motor.Set(ControlMode::Velocity, mps2countsPer100ms(mps));
-	_motor.Set(ControlMode::PercentOutput, mps / 3.0);
+	_motor.Set(ControlMode::Velocity, mps2countsPer100ms(mps));
 
 	ctre::phoenix::unmanaged::FeedEnable(100); // feed watchdog
 }
@@ -119,14 +118,14 @@ Listener::Listener()
 	motorProfile.slot0.closedLoopPeakOutput     = 1.0f; //Peak output for the PID Controller.
 	motorProfile.slot0.closedLoopPeriod         = 100;   //Samples per second (?) (IDK what this is)
 
-	//_motor.ConfigAllSettings(motorProfile);
+	_motor.ConfigAllSettings(motorProfile);
 
-	//_motor.SetNeutralMode(NeutralMode::Brake);
-	//_motor.SetInverted(false);
-	//_motor.SetSensorPhase(false);
+	_motor.SetNeutralMode(NeutralMode::Brake);
+	_motor.SetInverted(false);
+	_motor.SetSensorPhase(false);
 }
 
-
+// reads speed of motor shaft and returns in meters/sec
 double Listener::getActualSpeed()
 {
 	return countsPer100ms2mps(_motor.GetSelectedSensorVelocity());
