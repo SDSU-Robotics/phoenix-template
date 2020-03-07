@@ -59,7 +59,7 @@ int main (int argc, char **argv)
         listener.getJoyVals(buttons, axes);
 
 		// get controller values
-		float speed = 3 * axes[1]; // left Y
+		float speed = axes[1]; // left Y
 
 		speed_msg.data = speed;
 		

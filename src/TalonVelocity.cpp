@@ -58,7 +58,7 @@ int main (int argc, char **argv)
 
 	std_msgs::Float32 actualSpeed_msg;
 
-	ros::Duration(1.0).sleep();    // give time to finish initialization before trying to read position data, otherwise it will fail
+	
 
 	while (ros::ok())
 	{
@@ -92,6 +92,8 @@ void Listener::setSpeed(const std_msgs::Float32 msg)
 Listener::Listener()
 {
 	TalonSRXConfiguration motorProfile;
+
+	ros::Duration(1.0).sleep();    // give time to finish initialization before trying to read position data, otherwise it will fail
 
 	//Threshold for zero-motion for the neutral position.
 	motorProfile.neutralDeadband = 0.01;
