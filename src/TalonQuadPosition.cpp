@@ -43,7 +43,7 @@ int main (int argc, char **argv)
 	ctre::phoenix::platform::can::SetCANInterface("can0");
 	
 	Listener listener;
-	ros::Duration(1.0).sleep(); // Give tiem to finihs instalation before trying to read position data
+	
 	ros::Subscriber angle_sub = n.subscribe("angle", 1000, &Listener::setAngle, &listener);
 
 	ros::spin();
@@ -54,12 +54,7 @@ int main (int argc, char **argv)
 
 void Listener::setAngle(const std_msgs::Float32 msg)
 {
-	// limit values
 	float angle = msg.data;
-	//if (angle < -1.0f)
-	//	angle = -1.0f;
-	//else if (angle > 1.0f)
-	//	angle = 1.0f;
 
 	_motor.Set(ControlMode::Position, deg2counts(angle));
 
@@ -70,6 +65,8 @@ void Listener::setAngle(const std_msgs::Float32 msg)
 
 Listener::Listener()
 {
+	ros::Duration(1.0).sleep();
+
     TalonSRXConfiguration motorProfile;
 
 	//Threshold for zero-motion for the neutral position.
@@ -104,5 +101,4 @@ Listener::Listener()
 	_motor.SetSensorPhase(true);
 	_motor.SetSelectedSensorPosition(0);
 	_motor.Set(ControlMode::Position,(0));
-
 }
