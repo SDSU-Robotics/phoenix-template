@@ -13,23 +13,6 @@ using namespace ctre::phoenix::platform;
 using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;
 
-//#define PI 3.1415927
-//#define DIAMETER 0.2		// should be updated to non-tread diameter of wheels
-//#define GEAR_RATIO 26.9
-//#define COUNTS_PER_REVOLUTION 7
-
-//#define MAX_SPEED 3.0
-
-// double mps2countsPer100ms(double mps)
-// {
-// 	return mps*0.1*(1.0/(DIAMETER*PI))*GEAR_RATIO*COUNTS_PER_REVOLUTION;
-// }
-
-// double countsPer100ms2mps(double countsPer100ms)
-// {
-// 	return countsPer100ms/(0.1*(1.0/(DIAMETER*PI))*GEAR_RATIO*COUNTS_PER_REVOLUTION);
-// }
-
 
 class Listener
 {
@@ -53,12 +36,10 @@ int main (int argc, char **argv)
 
 	Listener listener;
 
-	ros::Subscriber position_sub = n.subscribe("speed", 1000, &Listener::setPosition, &listener);
+	ros::Subscriber position_sub = n.subscribe("position", 1000, &Listener::setPosition, &listener);
 	ros::Publisher actualPosition_pub = n.advertise<std_msgs::Float32>("actualPosition", 100);
 
 	std_msgs::Float32 actualPosition_msg;
-
-	
 
 	while (ros::ok())
 	{
@@ -77,13 +58,13 @@ int main (int argc, char **argv)
 void Listener::setPosition(const std_msgs::Float32 msg)
 {
 	// limit values
-	float fullyExtended = msg.data;
-	if (fullyExtended < 0)
-		fullyExtended = 0;
-	else if (fullyExtended > 1)
-		fullyExtended = 1;
+	float pos = msg.data;
+	if (pos < 0)
+		pos = 0;
+	else if (pos > 1)
+		pos = 1;
 
-	_motor.Set(ControlMode::Position, fullyExtended);
+	_motor.Set(ControlMode::Position, pos);
 
 	ctre::phoenix::unmanaged::FeedEnable(100); // feed watchdog
 }
