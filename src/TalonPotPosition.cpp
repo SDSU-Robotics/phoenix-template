@@ -13,29 +13,29 @@ using namespace ctre::phoenix::platform;
 using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;
 
-#define PI 3.1415927
-#define DIAMETER 0.2		// should be updated to non-tread diameter of wheels
-#define GEAR_RATIO 26.9
-#define COUNTS_PER_REVOLUTION 7
+//#define PI 3.1415927
+//#define DIAMETER 0.2		// should be updated to non-tread diameter of wheels
+//#define GEAR_RATIO 26.9
+//#define COUNTS_PER_REVOLUTION 7
 
-#define MAX_SPEED 3.0
+//#define MAX_SPEED 3.0
 
-double mps2countsPer100ms(double mps)
-{
-	return mps*0.1*(1.0/(DIAMETER*PI))*GEAR_RATIO*COUNTS_PER_REVOLUTION;
-}
+// double mps2countsPer100ms(double mps)
+// {
+// 	return mps*0.1*(1.0/(DIAMETER*PI))*GEAR_RATIO*COUNTS_PER_REVOLUTION;
+// }
 
-double countsPer100ms2mps(double countsPer100ms)
-{
-	return countsPer100ms/(0.1*(1.0/(DIAMETER*PI))*GEAR_RATIO*COUNTS_PER_REVOLUTION);
-}
+// double countsPer100ms2mps(double countsPer100ms)
+// {
+// 	return countsPer100ms/(0.1*(1.0/(DIAMETER*PI))*GEAR_RATIO*COUNTS_PER_REVOLUTION);
+// }
 
 
 class Listener
 {
 public:
 	Listener();
-	void setSpeed(const std_msgs::Float32 msg);
+	void setPosition(const std_msgs::Float32 msg);
 	double getActualPosition();
 
 private:
@@ -53,7 +53,7 @@ int main (int argc, char **argv)
 
 	Listener listener;
 
-	ros::Subscriber speed_sub = n.subscribe("speed", 1000, &Listener::setSpeed, &listener);
+	ros::Subscriber position_sub = n.subscribe("speed", 1000, &Listener::setPosition, &listener);
 	ros::Publisher actualPosition_pub = n.advertise<std_msgs::Float32>("actualPosition", 100);
 
 	std_msgs::Float32 actualPosition_msg;
@@ -74,16 +74,16 @@ int main (int argc, char **argv)
 }
 
 
-void Listener::setSpeed(const std_msgs::Float32 msg)
+void Listener::setPosition(const std_msgs::Float32 msg)
 {
 	// limit values
-	float mps = msg.data;
-	if (mps < -MAX_SPEED)
-		mps = -MAX_SPEED;
-	else if (mps > MAX_SPEED)
-		mps = MAX_SPEED;
+	float fullyExtended = msg.data;
+	if (fullyExtended < 0)
+		fullyExtended = 0;
+	else if (fullyExtended > 1)
+		fullyExtended = 1;
 
-	_motor.Set(ControlMode::Velocity, mps2countsPer100ms(mps));
+	_motor.Set(ControlMode::Position, fullyExtended);
 
 	ctre::phoenix::unmanaged::FeedEnable(100); // feed watchdog
 }
@@ -131,5 +131,5 @@ Listener::Listener()
 // reads speed of motor shaft and returns in meters/sec
 double Listener::getActualPosition()
 {
-	return _motor.GetSelectedSensorVelocity();
+	return _motor.GetSelectedSensorPosition();
 }
