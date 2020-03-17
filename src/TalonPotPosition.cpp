@@ -14,12 +14,19 @@ using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;
 
 
+#define MIN_POT_READING 340
+#define MAX_POT_READING 700
+#define MIN_INPUT 0.0
+#define MAX_INPUT 1.0
+
+
 class Listener
 {
 public:
 	Listener();
 	void setPosition(const std_msgs::Float32 msg);
 	double getActualPosition();
+	double getPercentOutput();
 
 private:
 	TalonSRX _motor = {DeviceIDs::motor};
@@ -37,16 +44,21 @@ int main (int argc, char **argv)
 	Listener listener;
 
 	ros::Subscriber position_sub = n.subscribe("position", 1000, &Listener::setPosition, &listener);
+
 	ros::Publisher actualPosition_pub = n.advertise<std_msgs::Float32>("actualPosition", 100);
+	ros::Publisher controlEffort_pub = n.advertise<std_msgs::Float32>("controlEffort", 100);
 
 	std_msgs::Float32 actualPosition_msg;
+	std_msgs::Float32 controlEffort_msg;
 
 	while (ros::ok())
 	{
 		actualPosition_msg.data = listener.getActualPosition();
-		
 		actualPosition_pub.publish(actualPosition_msg);
 		
+		controlEffort_msg.data = listener.getPercentOutput();
+		controlEffort_pub.publish(controlEffort_msg);
+
 		ros::spinOnce();
 		loop_rate.sleep();
 	}
@@ -59,10 +71,10 @@ void Listener::setPosition(const std_msgs::Float32 msg)
 {
 	// limit values
 	float pos = msg.data;
-	if (pos < 0)
-		pos = 0;
-	else if (pos > 1)
-		pos = 1;
+	if (pos < MIN_INPUT)	pos = MIN_INPUT;
+	if (pos > MAX_INPUT)	pos = MAX_INPUT;
+
+	pos = LinearInterpolation::Calculate(pos, MIN_INPUT, MIN_POT_READING, MAX_INPUT, MAX_POT_READING);
 
 	_motor.Set(ControlMode::Position, pos);
 
@@ -93,8 +105,8 @@ Listener::Listener()
 
 	//PID Constants
 	motorProfile.slot0.kP                       = 10.0f; //0.01f; //Propotional Constant.  Controls the speed of error correction.
-	motorProfile.slot0.kI                       = 0.001f; //Integral Constant.     Controls the steady-state error correction.
-	motorProfile.slot0.kD                       = 0.1f; //Derivative Constant.   Controls error oscillation.
+	motorProfile.slot0.kI                       = 0.00f; //Integral Constant.     Controls the steady-state error correction.
+	motorProfile.slot0.kD                       = 0.0f; //Derivative Constant.   Controls error oscillation.
 	motorProfile.slot0.kF                       = 0.0f; //Feed Forward Constant. (IDK what this does)
 	motorProfile.slot0.integralZone             = 100000;   //Maximum value for the integral error accumulator. Automatically cleared when exceeded.
 	motorProfile.slot0.maxIntegralAccumulator   = 10000;   //Maximum value for the integral error accumulator. (IDK what this does)
@@ -106,11 +118,16 @@ Listener::Listener()
 
 	_motor.SetNeutralMode(NeutralMode::Brake);
 	_motor.SetInverted(false);
-	_motor.SetSensorPhase(false);
+	_motor.SetSensorPhase(true);
 }
 
 // reads speed of motor shaft and returns in meters/sec
 double Listener::getActualPosition()
 {
 	return _motor.GetSelectedSensorPosition();
+}
+
+double Listener::getPercentOutput()
+{
+	return _motor.GetClosedLoopError();
 }
