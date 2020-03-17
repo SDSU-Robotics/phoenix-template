@@ -12,8 +12,11 @@ using namespace ctre::phoenix;
 using namespace ctre::phoenix::platform;
 using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;
-// Sterling Berg
 
+#define MIN_PULSE 450.0		// us
+#define MAX_PULSE 2250.0	// us
+#define MIN_INPUT 0
+#define MAX_INPUT 1.0
 
 
 class Listener
@@ -35,7 +38,7 @@ int main (int argc, char **argv)
 
 	Listener listener;
 
-	ros::Subscriber speed_sub = n.subscribe("speed", 1000, &Listener::setPosition, &listener);
+	ros::Subscriber speed_sub = n.subscribe("position", 1000, &Listener::setPosition, &listener);
 	
 
 	ros::spin();
@@ -48,26 +51,14 @@ void Listener::setPosition(const std_msgs::Float32 msg)
 {
 	// limit values
 	float pos = msg.data;
-	float pulse = 0;
-	if (pos < -1.0f)
-		pos = -1.0f;
-	else if (pos > 1.0f)
-		pos = 1.0f;
-	int flag = 0;
+	if (pos < MIN_INPUT)	pos = MIN_INPUT;
+	if (pos > MAX_INPUT)	pos = MAX_INPUT;
 
-	if (flag == 0){
-		_canifer.SetGeneralOutput(CANifier::GeneralPin::SPI_CLK_PWM0P, false, true);
-		flag = 1;
-	}
+	_canifer.SetGeneralOutput(CANifier::GeneralPin::SPI_CLK_PWM0P, false, true);
 
-	_canifer.SetGeneralOutput(CANifier::GeneralPin::QUAD_A, pos > 0.5 ? true : false, true);
-	
-	pulse = LinearInterpolation::Calculate(pos, -1, 1000, 1, 2000);
-	pulse = pulse/4200;
+	float pulse = LinearInterpolation::Calculate(pos, MIN_INPUT, MIN_PULSE, MAX_INPUT, MAX_PULSE); // pulse length in us
 
-	_canifer.SetPWMOutput(0, pulse);
-	
-
+	_canifer.SetPWMOutput(0, pulse / 4200.0); // 4.2 ms period
 	
 	_canifer.EnablePWMOutput(0, true);
 

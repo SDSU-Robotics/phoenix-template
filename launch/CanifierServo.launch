@@ -6,5 +6,7 @@
 	</node>
 
 	<node respawn="true" pkg="phoenix-template" type="CanifierServo" name="CanifierServo" />
-	<node respawn="true" pkg="phoenix-template" type="SimpleJoystick" name="SimpleJoystick" />
+	<node respawn="true" pkg="phoenix-template" type="SimpleJoystick" name="SimpleJoystick">
+		<remap from="speed" to="position"/>
+	</node>
 </launch>
