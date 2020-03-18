@@ -20,13 +20,13 @@ public:
 	void setSpeed(const std_msgs::Float32 msg);
 
 private:
-	TalonSRX _motor = {DeviceIDs::motor};
+	VictorSPX _motor = {DeviceIDs::motor};
 };
 
 
 int main (int argc, char **argv)
 {
-	ros::init(argc, argv, "Talon Percent Output");
+	ros::init(argc, argv, "Victor Percent Output");
 	ros::NodeHandle n;
 	
 	ctre::phoenix::platform::can::SetCANInterface("can0");
@@ -36,6 +36,8 @@ int main (int argc, char **argv)
 	ros::Subscriber speed_sub = n.subscribe("speed", 1000, &Listener::setSpeed, &listener);
 
 	ros::spin();
+
+	_motor.Set(ControlMode::PercentOutput, percentOutput);
 
 	return 0;
 }

@@ -7,7 +7,6 @@
 #include "ros/ros.h"
 #include "std_msgs/Float32.h"
 
-
 using namespace std;
 using namespace ctre::phoenix;
 using namespace ctre::phoenix::platform;
@@ -20,13 +19,13 @@ public:
 	void setSpeed(const std_msgs::Float32 msg);
 
 private:
-	TalonSRX _motor = {DeviceIDs::motor};
+	VictorSPX _motor = {DeviceIDs::motor};
 };
 
 
 int main (int argc, char **argv)
 {
-	ros::init(argc, argv, "Talon Percent Output");
+	ros::init(argc, argv, "SimpleMotor");
 	ros::NodeHandle n;
 	
 	ctre::phoenix::platform::can::SetCANInterface("can0");
